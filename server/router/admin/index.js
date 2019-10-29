@@ -55,5 +55,19 @@ module.exports = app =>{
         res.send(file)
     })
 
+    // 登录接口
+
+    app.post('/admin/api/login',async(req,res) =>{
+       //根据用户名找用户
+       const { username, password } = req.body
+       const AdminUser = require('../../models/AdminUser');
+       const user = await AdminUser.findOne({username});
+       console.log(user,'1')
+       if(!user) {
+        return res.status(422).send({
+            message:"用户不存在"
+        })
+       }
+    })
 
 }
