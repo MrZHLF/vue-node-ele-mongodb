@@ -1,14 +1,24 @@
 module.exports = app =>{
     const express = require('express');
     const router = express.Router();
+    const jwt = require('jsonwebtoken');
+    const AdminUser = require('../../models/AdminUser');
     //添加
     router.post('/',async(req,res) =>{
         const model = await req.Model.create(req.body);
         res.send(model)
     })
 
+    
     // 获取列表
-    router.get('/',async(req,res) =>{
+    router.get('/',async(req,res,next) =>{
+        const token = String(req.headers.authorization || '').split(' ').pop();
+        
+        const { id } = jwt.verify(token,app.get('secret'));
+        req.user = await AdminUser.findById(id)
+        console.log(req.user)
+        await next()
+    } ,async(req,res) =>{
         // populate查询是否有关联的数据库
         const queryOptions = {};
         if(req.Model.modelName === 'Category') {
@@ -60,14 +70,24 @@ module.exports = app =>{
     app.post('/admin/api/login',async(req,res) =>{
        //根据用户名找用户
        const { username, password } = req.body
-       const AdminUser = require('../../models/AdminUser');
-       const user = await AdminUser.findOne({username});
-       console.log(user,'1')
+       
+       const user = await AdminUser.findOne({ username }).select('+password')
        if(!user) {
         return res.status(422).send({
             message:"用户不存在"
         })
        }
-    })
+    // 校验密码
+    const isValid = require('bcryptjs').compareSync(password,user.password);
+    console.log(isValid)
+    if(!isValid) {
+        return res.status(422).send({
+            message:"密码错误"
+        })
+    }
 
+    // 返回token
+    const token = jwt.sign({ id: user._id }, app.get('secret'))
+    res.send({token})
+    })
 }
