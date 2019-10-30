@@ -29,6 +29,7 @@ export default {
      const res = await this.$http.post('login', this.model);
      console.log(res.data)
      localStorage.token = res.data.token
+     localStorage.user = JSON.stringify(res.data.user)
      this.$router.push('/')
      this.$message({
        type:"success",

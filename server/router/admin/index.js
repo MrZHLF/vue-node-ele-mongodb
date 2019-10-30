@@ -3,6 +3,13 @@ module.exports = app =>{
     const router = express.Router();
     const jwt = require('jsonwebtoken');
     const AdminUser = require('../../models/AdminUser');
+    const assert = require('http-assert') //判断校验
+
+
+    // 登录校验中间件
+    const authMiddleware =  require('../../middleware/auth')
+    const resourceMiddleware = require('../../middleware/resource')
+
     //添加
     router.post('/',async(req,res) =>{
         const model = await req.Model.create(req.body);
@@ -11,14 +18,7 @@ module.exports = app =>{
 
     
     // 获取列表
-    router.get('/',async(req,res,next) =>{
-        const token = String(req.headers.authorization || '').split(' ').pop();
-        
-        const { id } = jwt.verify(token,app.get('secret'));
-        req.user = await AdminUser.findById(id)
-        console.log(req.user)
-        await next()
-    } ,async(req,res) =>{
+    router.get('/',async(req,res) =>{
         // populate查询是否有关联的数据库
         const queryOptions = {};
         if(req.Model.modelName === 'Category') {
@@ -48,18 +48,12 @@ module.exports = app =>{
         })
     })
 
-
-    app.use('/admin/api/rest/:resource',async(req,res,next) =>{
-        const modelName = require('inflection').classify(req.params.resource)
-        req.Model = require(`../../models/${modelName}`)
-        next()
-    },router )
+    app.use('/admin/api/rest/:resource',authMiddleware(),resourceMiddleware(),router )
 
     //图片上传
-
     const multer = require('multer')
     const upload = multer({dest:__dirname + '/../../uploads'})
-    app.post('/admin/api/upload',upload.single('file'),async (req,res) =>{
+    app.post('/admin/api/upload',authMiddleware(),upload.single('file'),async (req,res) =>{
         const file = req.file;
         file.url = `http://localhost:3000/uploads/${file.filename}`
         res.send(file)
@@ -70,24 +64,27 @@ module.exports = app =>{
     app.post('/admin/api/login',async(req,res) =>{
        //根据用户名找用户
        const { username, password } = req.body
-       
        const user = await AdminUser.findOne({ username }).select('+password')
-       if(!user) {
-        return res.status(422).send({
-            message:"用户不存在"
-        })
-       }
+       assert(user, 422 , '用户不存在')
+    // 第2种写法
+    //    if(!user) {
+    //     return res.status(422).send({
+    //         message:"用户不存在"
+    //     })
+    //    }
     // 校验密码
     const isValid = require('bcryptjs').compareSync(password,user.password);
-    console.log(isValid)
-    if(!isValid) {
-        return res.status(422).send({
-            message:"密码错误"
-        })
-    }
-
+    assert(isValid,422,'密码错误')
     // 返回token
     const token = jwt.sign({ id: user._id }, app.get('secret'))
-    res.send({token})
+    // 返回token和用户信息
+    res.send({token,user})
+    })  
+
+    // 错误函数处理
+    app.use(async (err, req, res, next) => {
+        res.status(err.statusCode || 500).send({
+            message: err.message
+        })
     })
 }
