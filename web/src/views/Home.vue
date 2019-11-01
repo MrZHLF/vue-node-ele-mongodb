@@ -26,6 +26,19 @@
       </div>
     </div>
     <!-- end of nav icons -->
+    <m-list-card icon="menu1" title="英雄列表" :categories="newCats">
+      <template #items="{category}">
+        <div class="py-2" v-for="(news,i) in category.newList" :key="i">
+          <span>[{{news.categoryName}}]</span>
+          <span>|</span>
+          <span>{{news.title}}</span>
+          <span>{{news.date}}</span>
+        </div>  
+      </template>
+     
+    </m-list-card>  
+    <m-card icon="menu1" title="英雄列表"></m-card>
+    <m-card icon="menu1" title="精彩视频"></m-card>
   </div>
 </template>
 
@@ -39,8 +52,60 @@ export default {
           el: ".pagination-home"
         }
       },
-      }
-    },
+      newCats:[
+        {
+          name:"热门",
+          newList:[
+            {categoryName:"热门",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"热门",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"热门",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"热门",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"热门",title:"10月30日全服不停机修复公告", date:"06/01"},
+          ]
+        },
+        {
+          name:"新闻",
+          newList:[
+            {categoryName:"新闻",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"新闻",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"新闻",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"新闻",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"新闻",title:"10月30日全服不停机修复公告", date:"06/01"},
+          ]
+        },
+        {
+          name:"公告",
+          newList:[
+            {categoryName:"公告",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"公告",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"公告",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"公告",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"公告",title:"10月30日全服不停机修复公告", date:"06/01"},
+          ]
+        },
+        {
+          name:"活动",
+          newList:[
+            {categoryName:"活动",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"活动",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"活动",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"活动",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"活动",title:"10月30日全服不停机修复公告", date:"06/01"},
+          ]
+        },
+        {
+          name:"赛事",
+          newList:[
+            {categoryName:"赛事",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"赛事",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"赛事",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"赛事",title:"10月30日全服不停机修复公告", date:"06/01"},
+            {categoryName:"赛事",title:"10月30日全服不停机修复公告", date:"06/01"},
+          ]
+        }
+      ]
+    }
+  },
 }
 </script>
 <style lang="scss">

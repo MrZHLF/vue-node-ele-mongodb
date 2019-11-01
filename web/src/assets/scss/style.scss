@@ -143,7 +143,8 @@ p {
     border-bottom: 3px solid transparent;
     padding-bottom: 0.2rem;
     &.active {
-      border-bottom: 3px solid #fff;
+      color: map-get($colors, 'primary');
+      border-bottom-color: map-get($colors, 'primary');
     }
   }
   &.nav-inverse {
