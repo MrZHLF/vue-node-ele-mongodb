@@ -44,13 +44,16 @@ $colors: (
   @each $colorKey,$color in $colors {
       .text-#{$colorKey}{
         color: $color;
+      };  
+      .bg-#{$colorKey} {
+        background-color: $color;
       }
   }
 
 //   字体方向
   @each $val in (left,right,center) {
     .text-#{$val}{
-        text-align: $val;
+        text-align: $val !important;
     }
   }
 
@@ -70,3 +73,127 @@ $font-sizes: (
     xl: 1.2308,
   //16px,,,,
 );
+
+@each $sizeKey, $size in $font-sizes {
+  .fs-#{$sizeKey} {
+    font-size: $size * $base-font-size;
+  }
+}
+
+// width 
+.w-100{
+  width: 100%;
+}
+.h-100{
+  height: 100%;
+}
+
+
+// flex
+
+.d-flex{
+  display: flex;
+}
+.flex-column{
+  flex-direction: column;
+}
+
+$flex-jc: (
+  start: flex-start,
+  end: flex-end,
+  center: center,
+  between: space-between,
+  around: space-around,
+);
+
+@each $key, $value in $flex-jc {
+  .jc-#{$key} {
+    justify-content: $value;
+  }
+}
+
+$flex-ai: (
+  start: flex-start,
+  end: flex-end,
+  center: center,
+  stretch: stretch,
+);
+
+@each $key, $value in $flex-ai {
+  .ai-#{$key} {
+    align-items: $value;
+  }
+}
+
+.flex-1{
+  flex: 1;
+}
+.flex-grow-1{
+  flex-grow: 1;
+}
+
+// spacing
+$spacing-types:(m:margin,p:padding);
+$spacing-directions:(t:top,r:right,b:bottom,l:left);
+$spacing-base-size:1rem;
+$spacing-sizes:(0:0,1:0.25,2:0.5,3:1,4:1.5,5:3);
+
+@each $typeKey,$type in $spacing-types {
+
+  // .m-1
+  @each $sizeKey,$size in $spacing-sizes {
+    // .mt-1 {margin-top:0.25rem}
+    .#{$typeKey}-#{$sizeKey} {
+      #{$type}:$size * $spacing-base-size
+    }
+  }
+
+  // .mx-1 。my-1
+  @each $sizeKey,$size in $spacing-sizes {
+    // .mt-1 {margin-top:0.25rem}
+    .#{$typeKey}x-#{$sizeKey} {
+      #{$type}-left:$size * $spacing-base-size;
+      #{$type}-right:$size * $spacing-base-size;
+    }
+
+    .#{$typeKey}y-#{$sizeKey} {
+      #{$type}-top:$size * $spacing-base-size;
+      #{$type}-bottom:$size * $spacing-base-size;
+    }
+
+  }
+
+  @each $direactionKey,$direaction in $spacing-directions {
+    @each $sizeKey,$size in $spacing-sizes {
+      // .mt-1 {margin-top:0.25rem}
+      .#{$typeKey}#{$direactionKey}-#{$sizeKey} {
+        #{$type}-#{$direaction}:$size * $spacing-base-size
+      }
+    }
+  }
+}
+
+
+// button
+.btn{
+  border: none;
+  border-radius: 0.1538rem;
+  -webkit-border-radius: 0.1538rem;
+  -moz-border-radius: 0.1538rem;
+  -ms-border-radius: 0.1538rem;
+  -o-border-radius: 0.1538rem;
+  font-size: map-get($font-sizes,'sm' ) * $base-font-size;
+  padding: 0.2rem  0.6rem;
+}
+
+// nav
+.nav {
+  .nav-item{
+    border-bottom: 3px solid transparent;
+    padding-bottom: 0.2rem;
+    &.active{
+      border-bottom: 3px solid #fff;
+    }
+  }
+  
+}
