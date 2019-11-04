@@ -4,5 +4,5 @@ module.exports = app => {
       useNewUrlParser: true
     })
   
-    // require('require-all')(__dirname + '/../models')
+    require('require-all')(__dirname + '/../models')
   }
