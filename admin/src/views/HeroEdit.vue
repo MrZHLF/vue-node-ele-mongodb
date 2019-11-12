@@ -13,10 +13,24 @@
         <el-form-item label="头像">
           <el-upload
             class="avatar-uploader"
-            :action="$http.defaults.baseURL+'/upload'"
+            :action="uploadUrl"
+            :headers="getAuthHeaders()"
             :show-file-list="false"
-            :on-success="afterUpload">
+            :on-success="res => $set(model,'avatar',res.url)">
             <img v-if="model.avatar" :src="model.avatar" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+
+
+        <el-form-item label="Banner">
+          <el-upload
+            class="avatar-uploader"
+            :action="uploadUrl"
+            :headers="getAuthHeaders()"
+            :show-file-list="false"
+            :on-success="res => $set(model,'banner',res.url)">
+            <img v-if="model.banner" :src="model.banner" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -87,12 +101,19 @@
               <el-form-item label="图标">
                 <el-upload
                   class="avatar-uploader"
-                  :action="$http.defaults.baseURL+'/upload'"
+                  :action="uploadUrl"
+                  :headers="getAuthHeaders()"
                   :show-file-list="false"
                   :on-success="res => $set(item, 'icon', res.url)">
                   <img v-if="item.icon" :src="item.icon" class="avatar">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
+              </el-form-item>
+              <el-form-item label="冷却值">
+                <el-input type="textarea" v-model="item.delay"></el-input>
+              </el-form-item>
+              <el-form-item label="消耗">
+                <el-input type="textarea" v-model="item.cost"></el-input>
               </el-form-item>
               <el-form-item label="描述">
                 <el-input type="textarea" v-model="item.description"></el-input>
@@ -106,6 +127,36 @@
             </el-col>
           </el-row>
         </el-tab-pane>
+
+        <el-tab-pane label="最佳搭档" name="partners">
+          <el-button size="small" @click="model.partners.push({})"> <i class="el-icon-plus"></i>添加英雄</el-button>
+          <el-row type="flex" style="flex-wrap:wrap">
+            <el-col :md="12" v-for="(item,i) in model.partners" :key="i">
+
+              <el-form-item label="英雄">
+                <el-select filterable v-model="item.hero">
+                  <el-option 
+                    v-for="hero in heroes" 
+                    :key="hero._id"
+                    :value="hero._id"
+                    :label="hero.name"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="item.description"></el-input>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button type="danger" size="small" @click="model.partners.splice(i,1)">删除</el-button>
+              </el-form-item>
+
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+
       </el-tabs>
       <el-form-item style="margin-top:1rem">
         <el-button type="primary" native-type="submit">保存</el-button>
@@ -135,10 +186,10 @@ export default {
     }
   },
   methods: {
-    afterUpload(res){
-        this.model.avatar = res.url
-        // this.$set(this.model,'avatar',res.url)
-    },
+    // afterUpload(res){
+    //     this.model.avatar = res.url
+    //     // this.$set(this.model,'avatar',res.url)
+    // },
     async save(){
       let res=null;
       if(this.id) {
@@ -167,11 +218,16 @@ export default {
       this.items = res.data;
     },
 
+    async fetchHeroes(){
+      const res = await this.$http.get(`rest/heroes`);
+      this.heroes = res.data;
+    },
 
   },
   created () {
     this.fetchCategories();
     this.fetchItems();
+    this.fetchHeroes();
     this.id && this.fetch();
   }
 }
